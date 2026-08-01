@@ -1,0 +1,14 @@
+# Example configuration for asset-dedup-registry.
+# Copy to a writable location, adjust, and point CONFIG_PATH at it.
+
+core_base_url: http://asset-dedup-core:3000
+core_timeout_ms: 10000
+
+# Fallback minimum similarity percentage (0-100) for hamming duplicate matching, used when a project hasn't set its own.
+default_hamming_threshold: 80
+
+# Fallback per-API-key requests/minute, used when a project hasn't set its own `rate_limit_per_minute`.
+default_rate_limit_per_minute: 300
+
+database:
+  pool_size: 10

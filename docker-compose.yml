@@ -1,0 +1,38 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: asset_dedup_registry
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  registry:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: pimbay/asset-dedup-registry:local
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - '${BIND_ADDRESS:-127.0.0.1}:3100:3100'
+    environment:
+      NODE_ENV: production
+      LOG_LEVEL: info
+      CONFIG_PATH: /etc/asset-dedup-registry/config.yaml
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/asset_dedup_registry
+    volumes:
+      - ./config/config.yaml:/etc/asset-dedup-registry/config.yaml:ro
+    restart: unless-stopped
+
+volumes:
+  pgdata:
