@@ -1,7 +1,7 @@
 {
   "name": "@pimbay/asset-dedup-registry",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Stateful indexing/evaluation layer for the asset-dedup ecosystem - stores hashes and precomputed similarity edges, exposes duplicate lookup/grouping.",
   "license": "Unlicense",
   "author": {

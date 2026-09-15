@@ -5,6 +5,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); version
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-09-15
+
 ### Added
 
 - Multi-tenant PostgreSQL registry storing `project + recipe + asset identity → hash` pairs, one project per API key.
