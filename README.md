@@ -41,16 +41,6 @@ npm run dev
 `docker-compose.yml` only runs Postgres by default — migrations and the app itself run locally against it, so schema changes don't require an image rebuild.
 The `registry` service (full containerized build, `docker compose up --build`) is available for testing the actual production image, but is not the default local workflow.
 
-## Configuration
-
-| Variable       | Required | Description                                                            |
-| -------------- | -------- | ---------------------------------------------------------------------- |
-| `CONFIG_PATH`  | yes      | Path to the service's YAML config file — no default.                   |
-| `DATABASE_URL` | yes      | PostgreSQL connection string.                                          |
-| `NODE_ENV`     | no       | `development` \| `production` \| `test`. Controls log pretty-printing. |
-
-Full reference (all env vars, all `config.yaml` keys): **[docs/configuration.md](docs/configuration.md)**.
-
 ## Usage
 
 The core thing this service is for: given one asset, find what already looks like it.
@@ -95,19 +85,29 @@ curl -s "http://localhost:3100/duplicates/matches?path=/Downloads/test/001.jpg&r
 
 A full provisioning-to-query workflow (project setup, bulk scanning, threshold tuning, `ranking`/`clusters`, stats), plus edge cases worth knowing about: **[docs/usage.md](docs/usage.md)**.
 
+## Configuration
+
+| Variable       | Required | Description                                                            |
+| -------------- | -------- | ---------------------------------------------------------------------- |
+| `CONFIG_PATH`  | yes      | Path to the service's YAML config file — no default.                   |
+| `DATABASE_URL` | yes      | PostgreSQL connection string.                                          |
+| `NODE_ENV`     | no       | `development` \| `production` \| `test`. Controls log pretty-printing. |
+
+Full reference (all env vars, all `config.yaml` keys): **[docs/configuration.md](docs/configuration.md)**.
+
 ## API
 
 All endpoints except `GET /healthz` require `Authorization: Bearer <api-key>`. The project is always derived from the key, never from the request body/query.
 
-| Method   | Path                        | Description                                                   |
-| -------- | --------------------------- | ------------------------------------------------------------- |
-| `POST`   | `/assets`                   | Hash and add/update an asset (one or more recipes per call)   |
-| `DELETE` | `/assets`                   | Remove an asset and its hashes/duplicate data                 |
-| `GET`    | `/assets/:asset_id/recipes` | Which recipes have actually been computed for an asset        |
-| `GET`    | `/duplicates/matches`       | Closest matches to one given asset, for one recipe, paginated |
-| `GET`    | `/duplicates/groups`        | All mutually-similar groups, for one recipe, paginated        |
-| `GET`    | `/duplicates/ranking`       | Assets ranked by duplicate count, paginated                   |
-| `GET`    | `/healthz`                  | Healthcheck (`?deep=true` also checks DB + core reachability) |
+| Method   | Path                  | Description                                                   |
+| -------- | --------------------- | ------------------------------------------------------------- |
+| `POST`   | `/assets`             | Hash and add/update an asset (one or more recipes per call)   |
+| `DELETE` | `/assets`             | Remove an asset and its hashes/duplicate data                 |
+| `GET`    | `/assets/recipes`     | Which recipes have actually been computed for an asset        |
+| `GET`    | `/duplicates/matches` | Closest matches to one given asset, for one recipe, paginated |
+| `GET`    | `/duplicates/groups`  | All mutually-similar groups, for one recipe, paginated        |
+| `GET`    | `/duplicates/ranking` | Assets ranked by duplicate count, paginated                   |
+| `GET`    | `/healthz`            | Healthcheck (`?deep=true` also checks DB + core reachability) |
 
 Full request/response shapes, error codes, and `curl` examples: **[docs/api.md](docs/api.md)**.
 

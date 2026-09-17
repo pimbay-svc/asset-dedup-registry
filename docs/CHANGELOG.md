@@ -5,6 +5,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); version
 
 ## [Unreleased]
 
+### Changed
+
+- `cli`/`dev`/`migrate`/`start` no longer require a `.env` file to exist.
+
 ## [1.0.0] - 2026-09-15
 
 ### Added
