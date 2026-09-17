@@ -99,15 +99,15 @@ Full reference (all env vars, all `config.yaml` keys): **[docs/configuration.md]
 
 All endpoints except `GET /healthz` require `Authorization: Bearer <api-key>`. The project is always derived from the key, never from the request body/query.
 
-| Method   | Path                        | Description                                                   |
-| -------- | --------------------------- | ------------------------------------------------------------- |
-| `POST`   | `/assets`                   | Hash and add/update an asset (one or more recipes per call)   |
-| `DELETE` | `/assets`                   | Remove an asset and its hashes/duplicate data                 |
-| `GET`    | `/assets/:asset_id/recipes` | Which recipes have actually been computed for an asset        |
-| `GET`    | `/duplicates/matches`       | Closest matches to one given asset, for one recipe, paginated |
-| `GET`    | `/duplicates/groups`        | All mutually-similar groups, for one recipe, paginated        |
-| `GET`    | `/duplicates/ranking`       | Assets ranked by duplicate count, paginated                   |
-| `GET`    | `/healthz`                  | Healthcheck (`?deep=true` also checks DB + core reachability) |
+| Method   | Path                  | Description                                                   |
+| -------- | --------------------- | ------------------------------------------------------------- |
+| `POST`   | `/assets`             | Hash and add/update an asset (one or more recipes per call)   |
+| `DELETE` | `/assets`             | Remove an asset and its hashes/duplicate data                 |
+| `GET`    | `/assets/recipes`     | Which recipes have actually been computed for an asset        |
+| `GET`    | `/duplicates/matches` | Closest matches to one given asset, for one recipe, paginated |
+| `GET`    | `/duplicates/groups`  | All mutually-similar groups, for one recipe, paginated        |
+| `GET`    | `/duplicates/ranking` | Assets ranked by duplicate count, paginated                   |
+| `GET`    | `/healthz`            | Healthcheck (`?deep=true` also checks DB + core reachability) |
 
 Full request/response shapes, error codes, and `curl` examples: **[docs/api.md](docs/api.md)**.
 

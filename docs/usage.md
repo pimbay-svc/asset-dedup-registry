@@ -329,7 +329,7 @@ The `image.sha256` result in step 6 has no `distance` column and only ever answe
 
 ### `id` and `path` are independent identities, not aliases
 
-Every command above uses `--path`, matching how `asset scan`/`asset add` indexed these files. A lookup by `--id` on an asset that was only ever given a `--path` won't find it — `id` and `path` are two separate fields on an asset's identity, not two names for the same thing. Picking the wrong one doesn't silently fall back to the other; it returns a 404 (`GET /assets/:asset_id/recipes`, `duplicates matches`) as if the asset didn't exist at all.
+Every command above uses `--path`, matching how `asset scan`/`asset add` indexed these files. A lookup by `--id` on an asset that was only ever given a `--path` won't find it — `id` and `path` are two separate fields on an asset's identity, not two names for the same thing. Picking the wrong one doesn't silently fall back to the other; it returns a 404 (`GET /assets/recipes`, `duplicates matches`) as if the asset didn't exist at all.
 
 ### A low threshold isn't "safer," it's noise
 
