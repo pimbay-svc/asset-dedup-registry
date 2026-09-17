@@ -80,10 +80,11 @@ npm run cli -- asset add --project pimbay --path /Downloads/test/001.jpg --file 
 ```text
 recipe         hashes                                                            status
 -------------  ----------------------------------------------------------------  -------
+image.sha256   c816b1660d65704bccaa9648142cfd7fe05d032543911c399cbb412113337f45  created
 image.phash16  9139c4f6894d8a1f9b9eea69a2332dc06ca5769670a3131ff66835e3d631893c  created
 ```
 
-Only `image.phash16` shows up here — `sha256` is computed too, but `asset recipes` only lists recipes that have actually been computed for _this_ asset so far, which at this point is just the one write:
+Both configured image recipes get hashed in one call — `asset add` computes every project recipe whose mime group matches the file, not one at a time. `asset recipes` confirms both are now on record for this asset:
 
 ```bash
 npm run cli -- asset recipes --project pimbay --path /Downloads/test/001.jpg
@@ -93,6 +94,7 @@ npm run cli -- asset recipes --project pimbay --path /Downloads/test/001.jpg
 recipe
 -------------
 image.phash16
+image.sha256
 ```
 
 ### 5. Bulk-add the rest with `asset scan`
@@ -106,7 +108,10 @@ unchanged /Downloads/test/001.jpg
 created   /Downloads/test/002.png
 created   /Downloads/test/003.jpeg
 created   /Downloads/test/004-crop.png
+created   /Downloads/test/004-crop2.png
 created   /Downloads/test/005-blur.png
+
+Done: 6 files — 5 created, 0 updated, 1 unchanged, 0 failed.
 ```
 
 `scan` is idempotent per identity — re-running it over an asset that's already indexed and unchanged reports `unchanged` rather than re-writing it, which is exactly what happened to `001.jpg` here, since it was already added in step 4.
@@ -125,7 +130,10 @@ asset_id                           similarity  distance
 path=/Downloads/test/002.png       100         0
 path=/Downloads/test/003.jpeg      100         0
 path=/Downloads/test/005-blur.png  98.4        4
+path=/Downloads/test/004-crop.png  82          46
 ```
+
+`004-crop.png` already shows up here at the config's 80% default `hamming_threshold` — it takes a lower threshold to surface `004-crop2.png` too, which is what the next section demonstrates.
 
 ```bash
 npm run cli -- duplicates matches --project pimbay --path /Downloads/test/001.jpg --recipe image.sha256
@@ -161,23 +169,24 @@ npm run cli -- duplicates recompute --project pimbay
 
 ```text
 Recomputing 'image.phash16' (threshold 40%)...
-  5 assets processed...
-  done: 5 asset(s) processed for 'image.phash16'.
+  6 assets processed...
+  done: 6 asset(s) processed for 'image.phash16'.
 ```
 
-_Now_ the same query picks up the previously-excluded pair:
+_Now_ the same query picks up `004-crop2.png` — at 53.1%, it was below the 80% default used by the query above, but clears the new 40% threshold:
 
 ```bash
 npm run cli -- duplicates matches --project pimbay --path /Downloads/test/001.jpg --recipe image.phash16
 ```
 
 ```text
-asset_id                           similarity  distance
----------------------------------  ----------  --------
-path=/Downloads/test/002.png       100         0
-path=/Downloads/test/003.jpeg      100         0
-path=/Downloads/test/005-blur.png  98.4        4
-path=/Downloads/test/004-crop.png  82          46
+asset_id                            similarity  distance
+-----------------------------------  ----------  --------
+path=/Downloads/test/002.png        100         0
+path=/Downloads/test/003.jpeg       100         0
+path=/Downloads/test/005-blur.png   98.4        4
+path=/Downloads/test/004-crop.png   82          46
+path=/Downloads/test/004-crop2.png  53.1        120
 ```
 
 ## The same underlying data, three ways
@@ -243,10 +252,10 @@ path=/Downloads/test/003.jpeg      95.1
 path=/Downloads/test/005-blur.png  94.5
 
 Page 1/1 — 1 clusters total.
-generation: 12 (pass --generation to keep paging this snapshot)
+generation: 13 (pass --generation to keep paging this snapshot)
 ```
 
-Pass that `generation` value back on later pages of the _same_ listing (`--generation 12`) to keep reading this exact snapshot even if new assets get added mid-read.
+Pass that `generation` value back on later pages of the _same_ listing (`--generation 13`) to keep reading this exact snapshot even if new assets get added mid-read.
 
 ## Cross-project stats
 
@@ -304,7 +313,7 @@ curl -s "http://localhost:3100/stats" \
       "degraded": false
     }
   ],
-  "last_asset_added_at": "2026-09-13T17:54:01.956Z",
+  "last_asset_added_at": "2026-09-17T18:29:09.939Z",
   "assets_added_last_7d": 6,
   "assets_added_last_30d": 6
 }
