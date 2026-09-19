@@ -20,19 +20,29 @@ RUN npm run js:build
 FROM node:24-slim
 WORKDIR /app
 
+# ARGs re-declared here — Dockerfile ARG scope ends at the stage that follows a FROM,
+# so a value passed at build time only reaches instructions in this stage if repeated.
+ARG VERSION=0.0.0-dev
+ARG REVISION=unknown
+
 RUN useradd --system --create-home --uid 1001 appuser
 
 COPY --from=deps --chown=appuser:appuser /app/node_modules ./node_modules
 COPY --from=build --chown=appuser:appuser /app/dist ./dist
 COPY --chown=appuser:appuser package.json ./
+COPY --chown=appuser:appuser VERSION ./
 COPY --chown=appuser:appuser migration ./migration
 
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
+LABEL org.opencontainers.image.title="asset-dedup-core" \
+      org.opencontainers.image.version=$VERSION \
+      org.opencontainers.image.revision=$REVISION \
+      org.opencontainers.image.source="https://codeberg.org/pimbay-svc/asset-dedup-core"
+
 ENV NODE_ENV=production
 ENV CONFIG_PATH=/etc/asset-dedup-registry/config.yaml
-
 
 USER appuser
 EXPOSE 3100
